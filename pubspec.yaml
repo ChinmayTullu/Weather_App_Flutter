@@ -37,6 +37,7 @@ dependencies:
   intl: ^0.18.1
   fl_chart: ^0.64.0
   lottie: ^2.7.0
+  flutter_dotenv: ^5.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,6 +60,8 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
+  assets:
+    - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,10 +1,12 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
 class LocationService {
-  static const String _geocodingApiKey = 'b6e78df6bba44db07b9789eff3d3d3c1'; // Same as weather API key
+  // Get API key from environment variables
+  static String get _geocodingApiKey => dotenv.env['OPENWEATHER_API_KEY'] ?? '';
 
   static Future<Position?> getCurrentLocation() async {
     try {
@@ -40,6 +42,11 @@ class LocationService {
   }
 
   static Future<String?> getCityFromCoordinates(double lat, double lon) async {
+    if (_geocodingApiKey.isEmpty) {
+      print('Error: OpenWeather API key not found for geocoding.');
+      return null;
+    }
+
     try {
       final response = await http.get(
         Uri.parse(

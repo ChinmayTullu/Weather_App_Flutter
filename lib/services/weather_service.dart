@@ -1,13 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/weather_model.dart';
 
 class WeatherService {
-  static const String _apiKey = 'b6e78df6bba44db07b9789eff3d3d3c1'; // Replace with your API key
+  // Get API key from environment variables
+  static String get _apiKey => dotenv.env['OPENWEATHER_API_KEY'] ?? '';
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5';
+
+  // Validate API key
+  static bool get hasValidApiKey => _apiKey.isNotEmpty;
 
   // Get current weather by coordinates
   static Future<WeatherData?> getWeatherByCoordinates(double lat, double lon) async {
+    if (!hasValidApiKey) {
+      print('Error: OpenWeather API key not found. Please check your .env file.');
+      return null;
+    }
+
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/weather?lat=$lat&lon=$lon&appid=$_apiKey&units=metric'),
@@ -34,6 +44,8 @@ class WeatherService {
           hourlyForecast: forecasts['hourly'] as List<HourlyWeather>,
           dailyForecast: forecasts['daily'] as List<DailyWeather>,
         );
+      } else {
+        print('Weather API Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       print('Error fetching weather by coordinates: $e');
@@ -43,6 +55,11 @@ class WeatherService {
 
   // Get current weather by city name
   static Future<WeatherData?> getWeatherByCity(String cityName) async {
+    if (!hasValidApiKey) {
+      print('Error: OpenWeather API key not found. Please check your .env file.');
+      return null;
+    }
+
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/weather?q=$cityName&appid=$_apiKey&units=metric'),
@@ -72,6 +89,8 @@ class WeatherService {
           hourlyForecast: forecasts['hourly'] as List<HourlyWeather>,
           dailyForecast: forecasts['daily'] as List<DailyWeather>,
         );
+      } else {
+        print('Weather API Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       print('Error fetching weather by city: $e');
